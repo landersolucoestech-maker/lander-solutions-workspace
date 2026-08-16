@@ -121,10 +121,22 @@ const groups = [
     items: [
       { title: "Recursos Humanos", url: "/rh", icon: UsersRound },
       { title: "Integrações", url: "/integracoes", icon: Network },
-      { title: "Configurações de Integrações", url: "/configuracoes/integracoes", icon: Settings },
+      {
+        title: "Configurações de Integrações",
+        url: "/configuracoes/integracoes",
+        icon: Settings,
+      },
       { title: "Serviços de Leads", url: "/configuracoes-servicos-leads", icon: Settings },
-      { title: "Templates de Contratos", url: "/configuracoes-templates-contratos", icon: FileSignature },
-      { title: "Variáveis de Contratos", url: "/configuracoes-variaveis-contratos", icon: FileSignature },
+      {
+        title: "Templates de Contratos",
+        url: "/configuracoes-templates-contratos",
+        icon: FileSignature,
+      },
+      {
+        title: "Variáveis de Contratos",
+        url: "/configuracoes-variaveis-contratos",
+        icon: FileSignature,
+      },
     ],
   },
 ] as const;
@@ -147,12 +159,15 @@ export function AppSidebar() {
   const isActive = (url: string, exact?: boolean) =>
     exact ? pathname === url : pathname === url || pathname.startsWith(`${url}/`);
 
-  const renderItem = (item: {
-    title: string;
-    url: string;
-    icon: typeof LayoutDashboard;
-    exact?: boolean;
-  }, nested = false) => (
+  const renderItem = (
+    item: {
+      title: string;
+      url: string;
+      icon: typeof LayoutDashboard;
+      exact?: boolean;
+    },
+    nested = false,
+  ) => (
     <SidebarMenuItem key={item.url}>
       <SidebarMenuButton
         asChild
@@ -171,7 +186,11 @@ export function AppSidebar() {
   return (
     <Sidebar collapsible="icon">
       <SidebarHeader className="border-b border-sidebar-border">
-        <Link to="/" className="flex items-center gap-3 px-1.5 py-2.5" aria-label="Ir para o Dashboard">
+        <Link
+          to="/"
+          className="flex items-center gap-3 px-1.5 py-2.5"
+          aria-label="Ir para o Dashboard"
+        >
           <LanderMark />
           {!collapsed && (
             <div className="min-w-0">
@@ -209,7 +228,9 @@ export function AppSidebar() {
                         <Link to={groupTarget.url} className="flex items-center gap-2">
                           <group.icon className="h-4 w-4 shrink-0" />
                           {!collapsed && (
-                            <span className="truncate text-[13px] font-semibold">{group.title}</span>
+                            <span className="truncate text-[13px] font-semibold">
+                              {group.title}
+                            </span>
                           )}
                         </Link>
                       </SidebarMenuButton>
@@ -226,7 +247,9 @@ export function AppSidebar() {
       {!collapsed && (
         <SidebarFooter className="border-t border-sidebar-border">
           <div className="px-2 py-2">
-            <p className="text-[11px] font-medium text-sidebar-foreground/75">Lander Solutions Ltda.</p>
+            <p className="text-[11px] font-medium text-sidebar-foreground/75">
+              Lander Solutions Ltda.
+            </p>
             <p className="mt-0.5 text-[10px] leading-relaxed text-sidebar-foreground/50">
               Tecnologia para empresas crescerem.
             </p>
