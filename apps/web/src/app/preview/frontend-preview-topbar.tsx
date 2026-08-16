@@ -98,7 +98,9 @@ export function FrontendPreviewTopbar() {
             <DropdownMenuSeparator />
             <DropdownMenuItem className="flex-col items-start gap-0.5">
               <span className="font-medium">Repasse pendente</span>
-              <span className="text-xs text-muted-foreground">Music OS 360 · competência 08/2026</span>
+              <span className="text-xs text-muted-foreground">
+                Music OS 360 · competência 08/2026
+              </span>
             </DropdownMenuItem>
             <DropdownMenuItem className="flex-col items-start gap-0.5">
               <span className="font-medium">Contrato próximo do vencimento</span>
