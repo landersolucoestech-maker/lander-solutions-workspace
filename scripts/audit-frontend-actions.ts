@@ -119,7 +119,9 @@ for (const file of files) {
 
 console.log(`Interactive action audit: ${files.length} TSX files scanned.`);
 if (candidates.length === 0) {
-  console.log("Interactive action audit passed: no potentially inert Button/button elements found.");
+  console.log(
+    "Interactive action audit passed: no potentially inert Button/button elements found.",
+  );
   process.exit(0);
 }
 

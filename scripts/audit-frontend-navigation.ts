@@ -52,7 +52,9 @@ const listened = new Map<string, string[]>();
 for (const route of knownRoutes) {
   if (route.includes("$")) continue;
   if (!explorerRoutes.has(route)) {
-    violations.push(`registered static route '${route}' is not exposed in the global page explorer.`);
+    violations.push(
+      `registered static route '${route}' is not exposed in the global page explorer.`,
+    );
   }
 }
 
