@@ -1,4 +1,4 @@
-import { Link, useRouterState } from "@tanstack/react-router";
+import { useNavigate, useRouterState } from "@tanstack/react-router";
 import { ChevronDown, Map } from "lucide-react";
 
 import { Button } from "@/shared/components/ui/button";
@@ -67,6 +67,7 @@ const sections = [
 
 export function ProjectExplorer() {
   const pathname = useRouterState({ select: (state) => state.location.pathname });
+  const navigate = useNavigate();
 
   return (
     <DropdownMenu>
@@ -83,15 +84,13 @@ export function ProjectExplorer() {
             {index > 0 && <DropdownMenuSeparator />}
             <DropdownMenuLabel>{section.label}</DropdownMenuLabel>
             {section.items.map(([label, to]) => (
-              <DropdownMenuItem key={to} asChild>
-                <Link
-                  to={to}
-                  className="flex w-full items-center justify-between"
-                  aria-current={pathname === to ? "page" : undefined}
-                >
-                  <span>{label}</span>
-                  {pathname === to && <span className="text-xs text-muted-foreground">Atual</span>}
-                </Link>
+              <DropdownMenuItem
+                key={to}
+                onSelect={() => void navigate({ to })}
+                className="flex w-full cursor-pointer items-center justify-between"
+              >
+                <span>{label}</span>
+                {pathname === to && <span className="text-xs text-muted-foreground">Atual</span>}
               </DropdownMenuItem>
             ))}
           </div>
