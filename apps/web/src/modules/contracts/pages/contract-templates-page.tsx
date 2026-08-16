@@ -1271,7 +1271,7 @@ function VariableLibrary({
       </div>
       <div className="border-t p-3">
         <Button type="button" variant="outline" size="sm" className="w-full" asChild>
-          <a href="/configuracoes-variaveis-contratos">Configurar variáveis</a>
+          <a href={`${import.meta.env.BASE_URL}configuracoes-variaveis-contratos`}>Configurar variáveis</a>
         </Button>
       </div>
     </aside>
