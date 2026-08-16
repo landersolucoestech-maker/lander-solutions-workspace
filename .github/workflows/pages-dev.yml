@@ -45,6 +45,9 @@ jobs:
       - name: Audit frontend navigation
         run: bun run test:navigation
 
+      - name: Inventory interactive controls
+        run: bun scripts/audit-frontend-actions.ts
+
       - name: Build static SPA for GitHub Pages
         env:
           GITHUB_PAGES: "true"
