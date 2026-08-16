@@ -5,15 +5,15 @@ import {
   CalendarDays,
   ChevronDown,
   ChevronRight,
+  CircleDollarSign,
   ContactRound,
-  Copyright,
   FileSignature,
-  GitBranch,
   Headphones,
   KeyRound,
   Landmark,
   LayoutDashboard,
   Network,
+  PackageSearch,
   Percent,
   ReceiptText,
   Scale,
@@ -38,63 +38,126 @@ import {
   useSidebar,
 } from "@/shared/components/ui/sidebar";
 
-const beforeFinanceItems = [
+const coreItems = [
   { title: "Dashboard", url: "/", icon: LayoutDashboard, exact: true },
   { title: "Agenda", url: "/agenda", icon: CalendarDays },
-  { title: "CRM", url: "/crm", icon: ContactRound },
-  { title: "Contratos", url: "/contratos", icon: FileSignature },
 ];
 
-const financeItems = [
-  { title: "Transações", url: "/transacoes", icon: WalletCards },
-  { title: "Contabilidade", url: "/contabilidade", icon: BarChart3 },
-  { title: "Nota Fiscal", url: "/nota-fiscal", icon: ReceiptText },
-  { title: "Rateio de Custos", url: "/rateio", icon: GitBranch },
-  { title: "Repasses", url: "/repasses", icon: WalletCards },
-];
+const businessGroups = [
+  {
+    key: "empresa",
+    title: "Empresa",
+    icon: Building2,
+    items: [
+      { title: "Cadastros da Empresa", url: "/estrutura-organizacional", icon: Building2 },
+      { title: "Estrutura Societária", url: "/estrutura-societaria", icon: Landmark },
+      { title: "Acessos e Permissões", url: "/acessos", icon: KeyRound },
+    ],
+  },
+  {
+    key: "comercial",
+    title: "Comercial",
+    icon: ContactRound,
+    items: [
+      { title: "CRM", url: "/crm", icon: ContactRound },
+      { title: "Produtos / Unidades", url: "/unidades", icon: PackageSearch },
+    ],
+  },
+  {
+    key: "operacoes",
+    title: "Operações",
+    icon: Settings,
+    items: [
+      { title: "Agenda Corporativa", url: "/agenda", icon: CalendarDays },
+      { title: "Patrimônio e Licenças", url: "/patrimonio-licencas", icon: Server },
+    ],
+  },
+  {
+    key: "contratos",
+    title: "Contratos",
+    icon: FileSignature,
+    items: [{ title: "Gestão de Contratos", url: "/contratos", icon: FileSignature }],
+  },
+  {
+    key: "financeiro",
+    title: "Financeiro",
+    icon: CircleDollarSign,
+    items: [
+      { title: "Transações", url: "/transacoes", icon: WalletCards },
+      { title: "Contabilidade", url: "/contabilidade", icon: BarChart3 },
+    ],
+  },
+  {
+    key: "fiscal",
+    title: "Fiscal",
+    icon: ReceiptText,
+    items: [{ title: "Notas Fiscais", url: "/nota-fiscal", icon: ReceiptText }],
+  },
+  {
+    key: "custos",
+    title: "Custos & Rateios",
+    icon: Scale,
+    items: [{ title: "Rateio de Custos", url: "/rateio", icon: Scale }],
+  },
+  {
+    key: "participacoes",
+    title: "Participações & Repasses",
+    icon: Percent,
+    items: [
+      { title: "Participações", url: "/participacoes", icon: Percent },
+      { title: "Repasses", url: "/repasses", icon: WalletCards },
+    ],
+  },
+  {
+    key: "atendimento",
+    title: "Atendimento",
+    icon: Headphones,
+    items: [{ title: "Atendimento e Suporte", url: "/atendimento", icon: Headphones }],
+  },
+] as const;
 
-const afterFinanceItems = [
-  { title: "Participações Contratuais", url: "/participacoes", icon: Percent },
-  { title: "Atendimento e Suporte", url: "/atendimento", icon: Headphones },
-  { title: "Relatórios", url: "/relatorios", icon: BarChart3 },
-  { title: "Recursos Humanos", url: "/rh", icon: UsersRound },
-];
+const supportGroups = [
+  {
+    key: "governanca",
+    title: "Governança",
+    icon: ShieldCheck,
+    items: [
+      { title: "Jurídico", url: "/juridico", icon: Scale },
+      { title: "Compliance e Políticas", url: "/compliance-politicas", icon: ShieldCheck },
+      { title: "Auditoria", url: "/auditoria", icon: ShieldCheck },
+    ],
+  },
+  {
+    key: "gestao",
+    title: "Gestão e Configurações",
+    icon: Settings,
+    items: [
+      { title: "Relatórios", url: "/relatorios", icon: BarChart3 },
+      { title: "Recursos Humanos", url: "/rh", icon: UsersRound },
+      { title: "Integrações", url: "/configuracoes/integracoes", icon: Network },
+    ],
+  },
+] as const;
 
-const governanceItems = [
-  { title: "Jurídico", url: "/juridico", icon: Scale },
-  { title: "Compliance e Políticas", url: "/compliance-politicas", icon: ShieldCheck },
-  { title: "Propriedade Intelectual", url: "/propriedade-intelectual", icon: Copyright },
-];
-
-const administrationItems = [
-  { title: "Produtos / Unidades", url: "/unidades", icon: Building2 },
-  { title: "Estrutura Organizacional", url: "/estrutura-organizacional", icon: Building2 },
-  { title: "Estrutura Societária", url: "/estrutura-societaria", icon: Landmark },
-  { title: "Patrimônio e Licenças", url: "/patrimonio-licencas", icon: Server },
-  { title: "Acessos e Permissões", url: "/acessos", icon: KeyRound },
-  { title: "Auditoria", url: "/auditoria", icon: ShieldCheck },
-  { title: "Integrações", url: "/configuracoes/integracoes", icon: Network },
-];
+type GroupKey = (typeof businessGroups)[number]["key"] | (typeof supportGroups)[number]["key"];
 
 export function AppSidebar() {
   const { state } = useSidebar();
   const collapsed = state === "collapsed";
   const pathname = useRouterState({ select: (routerState) => routerState.location.pathname });
-  const financeActive = financeItems.some(
-    (item) => pathname === item.url || pathname.startsWith(`${item.url}/`),
-  );
-  const governanceActive = governanceItems.some(
-    (item) => pathname === item.url || pathname.startsWith(`${item.url}/`),
-  );
-  const administrationActive = administrationItems.some(
-    (item) => pathname === item.url || pathname.startsWith(`${item.url}/`),
-  );
-  const [financeOpen, setFinanceOpen] = useState(true);
-  const [governanceOpen, setGovernanceOpen] = useState(false);
-  const [administrationOpen, setAdministrationOpen] = useState(false);
-  const financeExpanded = financeOpen || financeActive;
-  const governanceExpanded = governanceOpen || governanceActive;
-  const administrationExpanded = administrationOpen || administrationActive;
+  const [openGroups, setOpenGroups] = useState<Record<GroupKey, boolean>>({
+    empresa: false,
+    comercial: false,
+    operacoes: false,
+    contratos: false,
+    financeiro: true,
+    fiscal: false,
+    custos: false,
+    participacoes: false,
+    atendimento: false,
+    governanca: false,
+    gestao: false,
+  });
 
   const isActive = (url: string, exact?: boolean) =>
     exact ? pathname === url : pathname === url || pathname.startsWith(`${url}/`);
@@ -115,19 +178,67 @@ export function AppSidebar() {
     </SidebarMenuItem>
   );
 
+  const renderGroup = (group: (typeof businessGroups)[number] | (typeof supportGroups)[number]) => {
+    const active = group.items.some((item) => isActive(item.url));
+    const expanded = openGroups[group.key] || active;
+
+    return (
+      <div key={group.key}>
+        <SidebarMenuItem>
+          <SidebarMenuButton
+            type="button"
+            isActive={active}
+            tooltip={group.title}
+            aria-expanded={expanded}
+            onClick={() =>
+              setOpenGroups((current) => ({ ...current, [group.key]: !current[group.key] }))
+            }
+          >
+            <group.icon className="h-4 w-4 shrink-0" />
+            {!collapsed && (
+              <>
+                <span className="truncate text-[13px] font-medium">{group.title}</span>
+                {expanded ? (
+                  <ChevronDown className="ml-auto h-4 w-4" />
+                ) : (
+                  <ChevronRight className="ml-auto h-4 w-4" />
+                )}
+              </>
+            )}
+          </SidebarMenuButton>
+        </SidebarMenuItem>
+
+        {(collapsed || expanded) &&
+          group.items.map((item) => (
+            <SidebarMenuItem key={item.url}>
+              <SidebarMenuButton
+                asChild
+                isActive={isActive(item.url)}
+                tooltip={item.title}
+                className={!collapsed ? "pl-7" : undefined}
+              >
+                <Link to={item.url} className="flex items-center gap-2">
+                  <item.icon className="h-4 w-4 shrink-0" />
+                  {!collapsed && <span className="truncate text-[13px]">{item.title}</span>}
+                </Link>
+              </SidebarMenuButton>
+            </SidebarMenuItem>
+          ))}
+      </div>
+    );
+  };
+
   return (
     <Sidebar collapsible="icon">
       <SidebarHeader className="border-b border-sidebar-border">
         <div className="flex items-center gap-2.5 px-1.5 py-2">
-          <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-sm bg-sidebar-primary text-sm font-bold text-sidebar-primary-foreground">
+          <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md bg-sidebar-primary text-sm font-bold text-sidebar-primary-foreground">
             LS
           </div>
           {!collapsed && (
             <div className="min-w-0">
-              <p className="truncate text-sm font-semibold text-sidebar-accent-foreground">
-                Lander Solutions
-              </p>
-              <p className="truncate text-[11px] text-sidebar-foreground/70">Gestão corporativa</p>
+              <p className="truncate text-sm font-semibold text-sidebar-accent-foreground">Lander Solutions</p>
+              <p className="truncate text-[11px] text-sidebar-foreground/70">Business OS</p>
             </div>
           )}
         </div>
@@ -137,126 +248,21 @@ export function AppSidebar() {
         <SidebarGroup>
           <SidebarGroupContent>
             <SidebarMenu>
-              {beforeFinanceItems.map(renderItem)}
+              {coreItems.map(renderItem)}
 
-              <SidebarMenuItem>
-                <SidebarMenuButton
-                  type="button"
-                  isActive={financeActive}
-                  tooltip="Financeiro"
-                  aria-expanded={financeExpanded}
-                  onClick={() => setFinanceOpen((open) => !open)}
-                >
-                  <Landmark className="h-4 w-4 shrink-0" />
-                  {!collapsed && (
-                    <>
-                      <span className="truncate text-[13px] font-medium">Financeiro</span>
-                      {financeExpanded ? (
-                        <ChevronDown className="ml-auto h-4 w-4" />
-                      ) : (
-                        <ChevronRight className="ml-auto h-4 w-4" />
-                      )}
-                    </>
-                  )}
-                </SidebarMenuButton>
-              </SidebarMenuItem>
+              {!collapsed && (
+                <li className="px-2 pb-1 pt-3 text-[10px] font-semibold uppercase tracking-[0.16em] text-sidebar-foreground/45">
+                  Pilares do negócio
+                </li>
+              )}
+              {businessGroups.map(renderGroup)}
 
-              {(collapsed || financeExpanded) &&
-                financeItems.map((item) => (
-                  <SidebarMenuItem key={item.url}>
-                    <SidebarMenuButton
-                      asChild
-                      isActive={isActive(item.url)}
-                      tooltip={item.title}
-                      className={!collapsed ? "pl-7" : undefined}
-                    >
-                      <Link to={item.url} className="flex items-center gap-2">
-                        <item.icon className="h-4 w-4 shrink-0" />
-                        {!collapsed && <span className="truncate text-[13px]">{item.title}</span>}
-                      </Link>
-                    </SidebarMenuButton>
-                  </SidebarMenuItem>
-                ))}
-
-              {afterFinanceItems.map(renderItem)}
-
-              <SidebarMenuItem>
-                <SidebarMenuButton
-                  type="button"
-                  isActive={governanceActive}
-                  tooltip="Governança"
-                  aria-expanded={governanceExpanded}
-                  onClick={() => setGovernanceOpen((open) => !open)}
-                >
-                  <ShieldCheck className="h-4 w-4 shrink-0" />
-                  {!collapsed && (
-                    <>
-                      <span className="truncate text-[13px] font-medium">Governança</span>
-                      {governanceExpanded ? (
-                        <ChevronDown className="ml-auto h-4 w-4" />
-                      ) : (
-                        <ChevronRight className="ml-auto h-4 w-4" />
-                      )}
-                    </>
-                  )}
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-
-              {(collapsed || governanceExpanded) &&
-                governanceItems.map((item) => (
-                  <SidebarMenuItem key={item.url}>
-                    <SidebarMenuButton
-                      asChild
-                      isActive={isActive(item.url)}
-                      tooltip={item.title}
-                      className={!collapsed ? "pl-7" : undefined}
-                    >
-                      <Link to={item.url} className="flex items-center gap-2">
-                        <item.icon className="h-4 w-4 shrink-0" />
-                        {!collapsed && <span className="truncate text-[13px]">{item.title}</span>}
-                      </Link>
-                    </SidebarMenuButton>
-                  </SidebarMenuItem>
-                ))}
-
-              <SidebarMenuItem>
-                <SidebarMenuButton
-                  type="button"
-                  isActive={administrationActive}
-                  tooltip="Administração"
-                  aria-expanded={administrationExpanded}
-                  onClick={() => setAdministrationOpen((open) => !open)}
-                >
-                  <Settings className="h-4 w-4 shrink-0" />
-                  {!collapsed && (
-                    <>
-                      <span className="truncate text-[13px] font-medium">Administração</span>
-                      {administrationExpanded ? (
-                        <ChevronDown className="ml-auto h-4 w-4" />
-                      ) : (
-                        <ChevronRight className="ml-auto h-4 w-4" />
-                      )}
-                    </>
-                  )}
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-
-              {(collapsed || administrationExpanded) &&
-                administrationItems.map((item) => (
-                  <SidebarMenuItem key={item.url}>
-                    <SidebarMenuButton
-                      asChild
-                      isActive={isActive(item.url)}
-                      tooltip={item.title}
-                      className={!collapsed ? "pl-7" : undefined}
-                    >
-                      <Link to={item.url} className="flex items-center gap-2">
-                        <item.icon className="h-4 w-4 shrink-0" />
-                        {!collapsed && <span className="truncate text-[13px]">{item.title}</span>}
-                      </Link>
-                    </SidebarMenuButton>
-                  </SidebarMenuItem>
-                ))}
+              {!collapsed && (
+                <li className="px-2 pb-1 pt-3 text-[10px] font-semibold uppercase tracking-[0.16em] text-sidebar-foreground/45">
+                  Gestão corporativa
+                </li>
+              )}
+              {supportGroups.map(renderGroup)}
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
@@ -264,9 +270,12 @@ export function AppSidebar() {
 
       {!collapsed && (
         <SidebarFooter className="border-t border-sidebar-border">
-          <p className="px-2 py-1.5 text-[11px] leading-relaxed text-sidebar-foreground/60">
-            Ambiente de desenvolvimento
-          </p>
+          <div className="px-2 py-2">
+            <p className="text-[11px] font-medium text-sidebar-foreground/75">Lander Solutions Ltda.</p>
+            <p className="mt-0.5 text-[10px] leading-relaxed text-sidebar-foreground/50">
+              Entidade central · ambiente de desenvolvimento
+            </p>
+          </div>
         </SidebarFooter>
       )}
     </Sidebar>
