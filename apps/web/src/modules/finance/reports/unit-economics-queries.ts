@@ -604,7 +604,10 @@ export async function loadUnitDetail(unitId: string, period: string): Promise<Un
       "contract_parties",
       "contract_id,party_id,party_role,is_primary,status",
     ),
-    selectOptionalRows<AccountRow>("managerial_accounts", "id,code,name,account_type,reporting_group"),
+    selectOptionalRows<AccountRow>(
+      "managerial_accounts",
+      "id,code,name,account_type,reporting_group",
+    ),
     selectOptionalRows<JournalEntryRow>(
       "journal_entries",
       "id,source_type,source_id,competence_date,description,status",

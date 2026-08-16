@@ -264,42 +264,42 @@ export function BusinessUnitDetailPage({ unitId }: { unitId: string }) {
               </p>
             ) : (
               <div className="overflow-x-auto">
-              <table className="w-full min-w-[760px] text-sm">
-                <thead className="bg-muted/50 text-left text-xs text-muted-foreground">
-                  <tr>
-                    <th className="px-4 py-3">Origem</th>
-                    <th className="px-4 py-3">Regra</th>
-                    <th className="px-4 py-3">Período</th>
-                    <th className="px-4 py-3 text-right">Percentual</th>
-                    <th className="px-4 py-3 text-right">Valor</th>
-                    <th className="px-4 py-3">Status</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {allocations.length === 0 && (
-                    <EmptyRow
-                      colSpan={6}
-                      label="Nenhuma despesa rateada foi distribuída para esta unidade no período."
-                    />
-                  )}
-                  {allocations.map((item) => (
-                    <tr key={item.id} className="border-t">
-                      <td className="px-4 py-3">{item.description}</td>
-                      <td className="px-4 py-3">{item.ruleName}</td>
-                      <td className="px-4 py-3">{localDate(item.competenceDate)}</td>
-                      <td className="px-4 py-3 text-right font-mono text-xs">
-                        {item.percentage.toFixed(2)}%
-                      </td>
-                      <td className="px-4 py-3 text-right font-mono text-xs">
-                        {money(item.amount)}
-                      </td>
-                      <td className="px-4 py-3">
-                        <StatusPill status={item.status} />
-                      </td>
+                <table className="w-full min-w-[760px] text-sm">
+                  <thead className="bg-muted/50 text-left text-xs text-muted-foreground">
+                    <tr>
+                      <th className="px-4 py-3">Origem</th>
+                      <th className="px-4 py-3">Regra</th>
+                      <th className="px-4 py-3">Período</th>
+                      <th className="px-4 py-3 text-right">Percentual</th>
+                      <th className="px-4 py-3 text-right">Valor</th>
+                      <th className="px-4 py-3">Status</th>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
+                  </thead>
+                  <tbody>
+                    {allocations.length === 0 && (
+                      <EmptyRow
+                        colSpan={6}
+                        label="Nenhuma despesa rateada foi distribuída para esta unidade no período."
+                      />
+                    )}
+                    {allocations.map((item) => (
+                      <tr key={item.id} className="border-t">
+                        <td className="px-4 py-3">{item.description}</td>
+                        <td className="px-4 py-3">{item.ruleName}</td>
+                        <td className="px-4 py-3">{localDate(item.competenceDate)}</td>
+                        <td className="px-4 py-3 text-right font-mono text-xs">
+                          {item.percentage.toFixed(2)}%
+                        </td>
+                        <td className="px-4 py-3 text-right font-mono text-xs">
+                          {money(item.amount)}
+                        </td>
+                        <td className="px-4 py-3">
+                          <StatusPill status={item.status} />
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
               </div>
             )}
             <div className="border-t p-4">
@@ -436,48 +436,51 @@ export function BusinessUnitDetailPage({ unitId }: { unitId: string }) {
             ) : (
               <div className="overflow-x-auto">
                 <table className="w-full min-w-[940px] text-sm">
-                <thead className="bg-muted/50 text-left text-xs text-muted-foreground">
-                  <tr>
-                    <th className="px-4 py-3">Título</th>
-                    <th className="px-4 py-3">Tipo</th>
-                    <th className="px-4 py-3">Contraparte</th>
-                    <th className="px-4 py-3">Vigência</th>
-                    <th className="px-4 py-3">Status</th>
-                    <th className="px-4 py-3 text-right">Valor</th>
-                    <th className="px-4 py-3 text-right">Ação</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {contracts.length === 0 && (
-                    <EmptyRow colSpan={7} label="Nenhum contrato está vinculado a esta unidade." />
-                  )}
-                  {contracts.map((item) => (
-                    <tr key={item.id} className="border-t">
-                      <td className="px-4 py-3">
-                        <strong>{item.code}</strong>
-                        <span className="block text-muted-foreground">{item.title}</span>
-                      </td>
-                      <td className="px-4 py-3">{item.contractType ?? "Não disponível"}</td>
-                      <td className="px-4 py-3">{item.counterparty ?? "Não disponível"}</td>
-                      <td className="px-4 py-3">
-                        {localDate(item.startsOn)} — {localDate(item.endsOn)}
-                      </td>
-                      <td className="px-4 py-3">
-                        <StatusPill status={item.status} />
-                      </td>
-                      <td className="px-4 py-3 text-right font-mono text-xs">
-                        {item.baseAmount === null ? "Não disponível" : money(item.baseAmount)}
-                      </td>
-                      <td className="px-4 py-3 text-right">
-                        <Button size="sm" variant="outline" asChild>
-                          <Link to="/contratos">
-                            Ver contrato <ExternalLink className="h-4 w-4" />
-                          </Link>
-                        </Button>
-                      </td>
+                  <thead className="bg-muted/50 text-left text-xs text-muted-foreground">
+                    <tr>
+                      <th className="px-4 py-3">Título</th>
+                      <th className="px-4 py-3">Tipo</th>
+                      <th className="px-4 py-3">Contraparte</th>
+                      <th className="px-4 py-3">Vigência</th>
+                      <th className="px-4 py-3">Status</th>
+                      <th className="px-4 py-3 text-right">Valor</th>
+                      <th className="px-4 py-3 text-right">Ação</th>
                     </tr>
-                  ))}
-                </tbody>
+                  </thead>
+                  <tbody>
+                    {contracts.length === 0 && (
+                      <EmptyRow
+                        colSpan={7}
+                        label="Nenhum contrato está vinculado a esta unidade."
+                      />
+                    )}
+                    {contracts.map((item) => (
+                      <tr key={item.id} className="border-t">
+                        <td className="px-4 py-3">
+                          <strong>{item.code}</strong>
+                          <span className="block text-muted-foreground">{item.title}</span>
+                        </td>
+                        <td className="px-4 py-3">{item.contractType ?? "Não disponível"}</td>
+                        <td className="px-4 py-3">{item.counterparty ?? "Não disponível"}</td>
+                        <td className="px-4 py-3">
+                          {localDate(item.startsOn)} — {localDate(item.endsOn)}
+                        </td>
+                        <td className="px-4 py-3">
+                          <StatusPill status={item.status} />
+                        </td>
+                        <td className="px-4 py-3 text-right font-mono text-xs">
+                          {item.baseAmount === null ? "Não disponível" : money(item.baseAmount)}
+                        </td>
+                        <td className="px-4 py-3 text-right">
+                          <Button size="sm" variant="outline" asChild>
+                            <Link to="/contratos">
+                              Ver contrato <ExternalLink className="h-4 w-4" />
+                            </Link>
+                          </Button>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
                 </table>
               </div>
             )}

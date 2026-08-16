@@ -46,7 +46,11 @@ for (const file of files) {
 
     const start = match.index ?? 0;
     const before = source.slice(Math.max(0, start - 220), start);
-    if (wrapperMarkers.some((marker) => before.includes(`<${marker}`) && !before.includes(`</${marker}>`))) {
+    if (
+      wrapperMarkers.some(
+        (marker) => before.includes(`<${marker}`) && !before.includes(`</${marker}>`),
+      )
+    ) {
       continue;
     }
 

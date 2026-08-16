@@ -47,13 +47,19 @@ for (const file of files) {
   const name = relative(".", file);
 
   for (const match of source.matchAll(/<a\b[^>]*\bhref=["'](\/[^"']*)["']/g)) {
-    violations.push(`${name}: internal plain anchor '${match[1]}' must use TanStack Link/navigation so GitHub Pages basepath is preserved.`);
+    violations.push(
+      `${name}: internal plain anchor '${match[1]}' must use TanStack Link/navigation so GitHub Pages basepath is preserved.`,
+    );
   }
   for (const match of source.matchAll(/\bhref\s*=\s*["']#["']/g)) {
     violations.push(`${name}: placeholder href="#" is not an actionable destination.`);
   }
-  for (const match of source.matchAll(/(?:window\.)?location\.(?:href\s*=|assign\(|replace\()\s*["'](\/[^"']*)/g)) {
-    violations.push(`${name}: direct browser navigation '${match[1]}' bypasses the application router.`);
+  for (const match of source.matchAll(
+    /(?:window\.)?location\.(?:href\s*=|assign\(|replace\()\s*["'](\/[^"']*)/g,
+  )) {
+    violations.push(
+      `${name}: direct browser navigation '${match[1]}' bypasses the application router.`,
+    );
   }
 
   const candidates = [
@@ -63,7 +69,10 @@ for (const file of files) {
   ];
   for (const match of candidates) {
     const target = normalizeRoute(match[1]);
-    if (!knownRoutes.has(target) && ![...knownRoutes].some((route) => isDynamicMatch(target, route))) {
+    if (
+      !knownRoutes.has(target) &&
+      ![...knownRoutes].some((route) => isDynamicMatch(target, route))
+    ) {
       violations.push(`${name}: route target '${target}' does not exist in routeTree.gen.ts.`);
     }
   }
@@ -80,11 +89,15 @@ for (const file of files) {
 
 for (const [event, origins] of dispatched) {
   if (!listened.has(event)) {
-    violations.push(`event '${event}' dispatched by ${origins.join(", ")} has no listener in apps/web/src.`);
+    violations.push(
+      `event '${event}' dispatched by ${origins.join(", ")} has no listener in apps/web/src.`,
+    );
   }
 }
 
-console.log(`Navigation audit: ${files.length} source files, ${knownRoutes.size} registered routes, ${dispatched.size} dispatched page events.`);
+console.log(
+  `Navigation audit: ${files.length} source files, ${knownRoutes.size} registered routes, ${dispatched.size} dispatched page events.`,
+);
 if (violations.length) {
   console.error(`Navigation audit failed with ${violations.length} issue(s):`);
   for (const issue of violations) console.error(`- ${issue}`);
