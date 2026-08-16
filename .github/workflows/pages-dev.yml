@@ -50,10 +50,10 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          shell_path="$(find apps/web/.output -type f -name '_shell.html' -print -quit)"
+          shell_path="$(find apps/web/dist apps/web/.output -type f -name '_shell.html' -print -quit 2>/dev/null || true)"
           if [ -z "$shell_path" ]; then
             echo "TanStack Start SPA shell (_shell.html) was not generated." >&2
-            find apps/web/.output -maxdepth 4 -type f | sort >&2 || true
+            find apps/web/dist apps/web/.output -maxdepth 4 -type f -print 2>/dev/null | sort >&2 || true
             exit 1
           fi
           public_dir="$(dirname "$shell_path")"
@@ -64,6 +64,8 @@ jobs:
 
       - name: Setup GitHub Pages
         uses: actions/configure-pages@v5
+        with:
+          enablement: true
 
       - name: Upload GitHub Pages artifact
         uses: actions/upload-pages-artifact@v4
