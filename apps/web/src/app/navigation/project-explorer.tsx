@@ -13,26 +13,43 @@ import {
 
 const sections = [
   {
-    label: "Principal",
+    label: "Visão geral",
     items: [
       ["Dashboard", "/"],
       ["Agenda", "/agenda"],
+    ],
+  },
+  {
+    label: "Empresa e Comercial",
+    items: [
       ["CRM", "/crm"],
+      ["Clientes", "/clientes"],
+      ["Produtos / Unidades", "/unidades"],
+      ["Estrutura Corporativa", "/estrutura"],
+      ["Estrutura Organizacional", "/estrutura-organizacional"],
+      ["Estrutura Societária", "/estrutura-societaria"],
+      ["Ativos Corporativos", "/ativos"],
+      ["Patrimônio e Licenças", "/patrimonio-licencas"],
+    ],
+  },
+  {
+    label: "Contratos e Operação",
+    items: [
       ["Contratos", "/contratos"],
       ["Atendimento e Suporte", "/atendimento"],
-      ["Relatórios", "/relatorios"],
       ["Recursos Humanos", "/rh"],
     ],
   },
   {
-    label: "Financeiro",
+    label: "Financeiro e Fiscal",
     items: [
       ["Transações", "/transacoes"],
       ["Contabilidade", "/contabilidade"],
       ["Notas Fiscais", "/nota-fiscal"],
       ["Rateio de Custos", "/rateio"],
+      ["Participações", "/participacoes"],
       ["Repasses", "/repasses"],
-      ["Participações Contratuais", "/participacoes"],
+      ["Relatórios", "/relatorios"],
     ],
   },
   {
@@ -41,23 +58,15 @@ const sections = [
       ["Jurídico", "/juridico"],
       ["Compliance e Políticas", "/compliance-politicas"],
       ["Propriedade Intelectual", "/propriedade-intelectual"],
-    ],
-  },
-  {
-    label: "Administração",
-    items: [
-      ["Produtos / Unidades", "/unidades"],
-      ["Estrutura Organizacional", "/estrutura-organizacional"],
-      ["Estrutura Societária", "/estrutura-societaria"],
-      ["Patrimônio e Licenças", "/patrimonio-licencas"],
       ["Acessos e Permissões", "/acessos"],
       ["Auditoria", "/auditoria"],
-      ["Integrações", "/configuracoes/integracoes"],
     ],
   },
   {
-    label: "Configurações internas",
+    label: "Integrações e Configurações",
     items: [
+      ["Integrações", "/integracoes"],
+      ["Configurações de Integrações", "/configuracoes/integracoes"],
       ["Serviços de Leads", "/configuracoes-servicos-leads"],
       ["Templates de Contratos", "/configuracoes-templates-contratos"],
       ["Variáveis de Contratos", "/configuracoes-variaveis-contratos"],
@@ -74,11 +83,11 @@ export function ProjectExplorer() {
       <DropdownMenuTrigger asChild>
         <Button type="button" size="sm" variant="outline" className="gap-2">
           <Map className="h-4 w-4" />
-          Explorar projeto
+          Explorar páginas
           <ChevronDown className="h-3.5 w-3.5" />
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="end" className="max-h-[70vh] w-72 overflow-y-auto">
+      <DropdownMenuContent align="end" className="max-h-[78vh] w-80 overflow-y-auto">
         {sections.map((section, index) => (
           <div key={section.label}>
             {index > 0 && <DropdownMenuSeparator />}
