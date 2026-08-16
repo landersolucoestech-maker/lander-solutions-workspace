@@ -48,9 +48,11 @@ const codeSplitting = {
 };
 
 export default defineConfig(async ({ command }): Promise<UserConfig> => {
+  const isGitHubPages = process.env.GITHUB_PAGES === "true";
   const plugins: PluginOption[] = [
     tailwindcss(),
     tanstackStart({
+      ...(isGitHubPages ? { spa: { enabled: true } } : {}),
       importProtection: {
         behavior: "error",
         client: {
@@ -69,6 +71,7 @@ export default defineConfig(async ({ command }): Promise<UserConfig> => {
   plugins.push(viteReact());
 
   return {
+    base: isGitHubPages ? "/lander-solutions-workspace/" : "/",
     server: {
       host: "::",
       port: 8080,
