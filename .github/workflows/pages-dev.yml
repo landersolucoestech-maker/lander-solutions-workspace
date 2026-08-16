@@ -48,16 +48,17 @@ jobs:
       - name: Inventory interactive controls
         run: bun scripts/audit-frontend-actions.ts
 
-      - name: Build fully prerendered static application
+      - name: Build fully prerendered frontend-only preview
         env:
           GITHUB_PAGES: "true"
+          VITE_FRONTEND_PREVIEW: "true"
           VITE_APP_ENV: development
           VITE_SUPABASE_URL: https://jodzhcktrlwinywqgbab.supabase.co
           VITE_EXPECTED_SUPABASE_REF: jodzhcktrlwinywqgbab
           VITE_SUPABASE_PUBLISHABLE_KEY: sb_publishable_MmZ_-3awL9UXaFWBRAq18g_Phayw5Yj
         run: bun run build:development
 
-      - name: Prepare Pages artifact without replacing real pages by the SPA shell
+      - name: Prepare Pages artifact with rendered business content
         id: pages
         shell: bash
         run: |
@@ -68,20 +69,31 @@ jobs:
             exit 1
           fi
           public_dir="$(dirname "$shell_path")"
-          if [ ! -f "$public_dir/index.html" ]; then
-            echo "Prerendered dashboard index.html was not generated." >&2
+          if [ ! -f "$public_dir/index.html" ] || [ ! -f "$public_dir/crm/index.html" ]; then
+            echo "Required prerendered pages were not generated." >&2
             find "$public_dir" -maxdepth 4 -type f -print | sort >&2
             exit 1
           fi
           route_count="$(find "$public_dir" -type f -name 'index.html' | wc -l | tr -d ' ')"
           if [ "$route_count" -lt 20 ]; then
             echo "Expected complete prerendered route set; found only $route_count index.html files." >&2
-            find "$public_dir" -type f -name 'index.html' -print | sort >&2
+            exit 1
+          fi
+          if grep -a -q "Carregando CRM" "$public_dir/crm/index.html"; then
+            echo "CRM was prerendered as a loading state instead of frontend content." >&2
+            exit 1
+          fi
+          if ! grep -a -q "Contatos / Clientes" "$public_dir/crm/index.html"; then
+            echo "CRM frontend content is missing from prerendered HTML." >&2
+            exit 1
+          fi
+          if ! grep -a -q "Faturamento bruto" "$public_dir/index.html"; then
+            echo "Dashboard frontend content is missing from prerendered HTML." >&2
             exit 1
           fi
           cp "$shell_path" "$public_dir/404.html"
           touch "$public_dir/.nojekyll"
-          echo "Published $route_count prerendered pages plus SPA fallback."
+          echo "Published $route_count prerendered frontend pages with visible business content."
           echo "path=$public_dir" >> "$GITHUB_OUTPUT"
 
       - name: Setup GitHub Pages
