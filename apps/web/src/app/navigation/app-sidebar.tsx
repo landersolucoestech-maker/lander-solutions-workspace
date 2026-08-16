@@ -6,8 +6,8 @@ import { Sidebar, SidebarContent, SidebarFooter, SidebarGroup, SidebarGroupConte
 const coreItems = [{ title: "Dashboard", url: "/", icon: LayoutDashboard, exact: true }, { title: "Agenda", url: "/agenda", icon: CalendarDays }];
 const businessGroups = [
   { key:"empresa", title:"Empresa", icon:Building2, items:[{title:"Cadastros da Empresa",url:"/estrutura-organizacional",icon:Building2},{title:"Estrutura Societária",url:"/estrutura-societaria",icon:Landmark},{title:"Acessos e Permissões",url:"/acessos",icon:KeyRound}]},
-  { key:"comercial", title:"Comercial", icon:ContactRound, items:[{title:"CRM",url:"/crm",icon:ContactRound},{title:"Produtos / Unidades",url:"/unidades",icon:PackageSearch}]},
-  { key:"operacoes", title:"Operações", icon:Settings, items:[{title:"Agenda Corporativa",url:"/agenda",icon:CalendarDays},{title:"Patrimônio e Licenças",url:"/patrimonio-licencas",icon:Server}]},
+  { key:"comercial", title:"Comercial", icon:ContactRound, items:[{title:"CRM",url:"/crm",icon:ContactRound},{title:"Clientes",url:"/clientes",icon:UsersRound},{title:"Produtos / Unidades",url:"/unidades",icon:PackageSearch}]},
+  { key:"operacoes", title:"Operações", icon:Settings, items:[{title:"Agenda Corporativa",url:"/agenda",icon:CalendarDays},{title:"Ativos Corporativos",url:"/ativos",icon:Server},{title:"Patrimônio e Licenças",url:"/patrimonio-licencas",icon:Server}]},
   { key:"contratos", title:"Contratos", icon:FileSignature, items:[{title:"Gestão de Contratos",url:"/contratos",icon:FileSignature}]},
   { key:"financeiro", title:"Financeiro", icon:CircleDollarSign, items:[{title:"Transações",url:"/transacoes",icon:WalletCards},{title:"Contabilidade",url:"/contabilidade",icon:BarChart3}]},
   { key:"fiscal", title:"Fiscal", icon:ReceiptText, items:[{title:"Notas Fiscais",url:"/nota-fiscal",icon:ReceiptText}]},
@@ -16,7 +16,7 @@ const businessGroups = [
   { key:"atendimento", title:"Atendimento", icon:Headphones, items:[{title:"Atendimento e Suporte",url:"/atendimento",icon:Headphones}]},
 ] as const;
 const supportGroups = [
-  {key:"governanca",title:"Governança",icon:ShieldCheck,items:[{title:"Jurídico",url:"/juridico",icon:Scale},{title:"Compliance e Políticas",url:"/compliance-politicas",icon:ShieldCheck},{title:"Auditoria",url:"/auditoria",icon:ShieldCheck}]},
+  {key:"governanca",title:"Governança",icon:ShieldCheck,items:[{title:"Jurídico",url:"/juridico",icon:Scale},{title:"Compliance e Políticas",url:"/compliance-politicas",icon:ShieldCheck},{title:"Propriedade Intelectual",url:"/propriedade-intelectual",icon:ShieldCheck},{title:"Auditoria",url:"/auditoria",icon:ShieldCheck}]},
   {key:"gestao",title:"Gestão e Configurações",icon:Settings,items:[{title:"Relatórios",url:"/relatorios",icon:BarChart3},{title:"Recursos Humanos",url:"/rh",icon:UsersRound},{title:"Integrações",url:"/configuracoes/integracoes",icon:Network}]},
 ] as const;
 type GroupKey=(typeof businessGroups)[number]["key"]|(typeof supportGroups)[number]["key"];
