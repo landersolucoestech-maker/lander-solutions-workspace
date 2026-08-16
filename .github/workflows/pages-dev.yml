@@ -48,7 +48,7 @@ jobs:
       - name: Inventory interactive controls
         run: bun scripts/audit-frontend-actions.ts
 
-      - name: Build static SPA for GitHub Pages
+      - name: Build fully prerendered static application
         env:
           GITHUB_PAGES: "true"
           VITE_APP_ENV: development
@@ -57,7 +57,7 @@ jobs:
           VITE_SUPABASE_PUBLISHABLE_KEY: sb_publishable_MmZ_-3awL9UXaFWBRAq18g_Phayw5Yj
         run: bun run build:development
 
-      - name: Prepare Pages artifact
+      - name: Prepare Pages artifact without replacing real pages by the SPA shell
         id: pages
         shell: bash
         run: |
@@ -65,13 +65,23 @@ jobs:
           shell_path="$(find apps/web/dist apps/web/.output -type f -name '_shell.html' -print -quit 2>/dev/null || true)"
           if [ -z "$shell_path" ]; then
             echo "TanStack Start SPA shell (_shell.html) was not generated." >&2
-            find apps/web/dist apps/web/.output -maxdepth 4 -type f -print 2>/dev/null | sort >&2 || true
             exit 1
           fi
           public_dir="$(dirname "$shell_path")"
-          cp "$shell_path" "$public_dir/index.html"
+          if [ ! -f "$public_dir/index.html" ]; then
+            echo "Prerendered dashboard index.html was not generated." >&2
+            find "$public_dir" -maxdepth 4 -type f -print | sort >&2
+            exit 1
+          fi
+          route_count="$(find "$public_dir" -type f -name 'index.html' | wc -l | tr -d ' ')"
+          if [ "$route_count" -lt 20 ]; then
+            echo "Expected complete prerendered route set; found only $route_count index.html files." >&2
+            find "$public_dir" -type f -name 'index.html' -print | sort >&2
+            exit 1
+          fi
           cp "$shell_path" "$public_dir/404.html"
           touch "$public_dir/.nojekyll"
+          echo "Published $route_count prerendered pages plus SPA fallback."
           echo "path=$public_dir" >> "$GITHUB_OUTPUT"
 
       - name: Setup GitHub Pages
