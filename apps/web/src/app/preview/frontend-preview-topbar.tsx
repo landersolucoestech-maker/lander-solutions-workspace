@@ -2,6 +2,14 @@ import { useState } from "react";
 import { Bell, CalendarDays, ChevronDown, Search } from "lucide-react";
 
 import { Button } from "@/shared/components/ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/shared/components/ui/dropdown-menu";
 import { Input } from "@/shared/components/ui/input";
 import {
   Select,
@@ -73,16 +81,54 @@ export function FrontendPreviewTopbar() {
           </SelectContent>
         </Select>
 
-        <Button type="button" variant="ghost" size="icon" title="Notificações" aria-label="Notificações">
-          <Bell className="h-4 w-4" />
-        </Button>
-        <Button type="button" variant="outline" className="gap-2">
-          <span className="flex h-6 w-6 items-center justify-center rounded-full bg-primary text-[10px] font-semibold text-primary-foreground">
-            LS
-          </span>
-          <span className="hidden text-xs sm:inline">Administrador</span>
-          <ChevronDown className="h-3.5 w-3.5" />
-        </Button>
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button
+              type="button"
+              variant="ghost"
+              size="icon"
+              title="Notificações"
+              aria-label="Notificações"
+            >
+              <Bell className="h-4 w-4" />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end" className="w-80">
+            <DropdownMenuLabel>Notificações</DropdownMenuLabel>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem className="flex-col items-start gap-0.5">
+              <span className="font-medium">Repasse pendente</span>
+              <span className="text-xs text-muted-foreground">Music OS 360 · competência 08/2026</span>
+            </DropdownMenuItem>
+            <DropdownMenuItem className="flex-col items-start gap-0.5">
+              <span className="font-medium">Contrato próximo do vencimento</span>
+              <span className="text-xs text-muted-foreground">CTR-2026-028 · 31/10/2026</span>
+            </DropdownMenuItem>
+            <DropdownMenuItem className="flex-col items-start gap-0.5">
+              <span className="font-medium">SLA de atendimento em risco</span>
+              <span className="text-xs text-muted-foreground">SUP-1047 · Aurora Digital</span>
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button type="button" variant="outline" className="gap-2">
+              <span className="flex h-6 w-6 items-center justify-center rounded-full bg-primary text-[10px] font-semibold text-primary-foreground">
+                LS
+              </span>
+              <span className="hidden text-xs sm:inline">Administrador</span>
+              <ChevronDown className="h-3.5 w-3.5" />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end" className="w-52">
+            <DropdownMenuLabel>Conta administrativa</DropdownMenuLabel>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem>Meu perfil</DropdownMenuItem>
+            <DropdownMenuItem>Preferências</DropdownMenuItem>
+            <DropdownMenuItem>Segurança e sessões</DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
       </div>
     </header>
   );
