@@ -2,7 +2,7 @@ import { Outlet } from "@tanstack/react-router";
 
 import { AppSidebar } from "@/app/navigation/app-sidebar";
 import { Topbar } from "@/app/navigation/topbar";
-import { FrontendPreviewPage } from "@/app/preview/frontend-preview-page";
+import { FrontendPreviewRouter } from "@/app/preview/frontend-preview-router";
 import { FrontendPreviewTopbar } from "@/app/preview/frontend-preview-topbar";
 import { WorkspaceProvider } from "@/app/providers/workspace-context";
 import { LegacyRowActionsBridge } from "@/app/shell/legacy-row-actions-bridge";
@@ -21,7 +21,7 @@ export function ApplicationShell() {
             <div className="flex min-w-0 flex-1 flex-col">
               {FRONTEND_PREVIEW ? <FrontendPreviewTopbar /> : <Topbar />}
               <main className="w-full min-w-0 flex-1 space-y-6 overflow-x-hidden p-4 md:p-6">
-                {FRONTEND_PREVIEW ? <FrontendPreviewPage /> : <Outlet />}
+                {FRONTEND_PREVIEW ? <FrontendPreviewRouter /> : <Outlet />}
               </main>
             </div>
           </div>
