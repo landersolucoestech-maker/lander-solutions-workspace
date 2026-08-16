@@ -55,7 +55,6 @@ const groups = [
     icon: ContactRound,
     items: [
       { title: "CRM", url: "/crm", icon: ContactRound },
-      { title: "Clientes", url: "/clientes", icon: UsersRound },
       { title: "Produtos / Unidades", url: "/unidades", icon: PackageSearch },
     ],
   },
