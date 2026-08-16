@@ -64,7 +64,11 @@ export default defineConfig(async ({ command }): Promise<UserConfig> => {
     }),
   ];
 
-  if (command === "build") {
+  // GitHub Pages serves static files only. In SPA mode TanStack Start needs its
+  // own Vite server output during prerendering; the Nitro Cloudflare preset
+  // writes a different output shape (.output/server/index.mjs), which makes the
+  // SPA shell build fail while looking for dist/server/server.js.
+  if (command === "build" && !isGitHubPages) {
     plugins.push(nitro({ defaultPreset: "cloudflare-module" }));
   }
 
