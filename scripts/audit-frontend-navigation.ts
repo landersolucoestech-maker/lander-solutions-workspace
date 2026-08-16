@@ -3,6 +3,7 @@ import { join, relative } from "node:path";
 
 const ROOT = "apps/web/src";
 const ROUTE_TREE = join(ROOT, "routeTree.gen.ts");
+const PROJECT_EXPLORER = join(ROOT, "app/navigation/project-explorer.tsx");
 
 async function walk(dir: string): Promise<string[]> {
   const entries = await readdir(dir);
@@ -37,10 +38,23 @@ for (const match of routeTree.matchAll(/^\s*'([^']+)'\s*:/gm)) {
 }
 knownRoutes.add("/");
 
+const explorerSource = await readFile(PROJECT_EXPLORER, "utf8");
+const explorerRoutes = new Set<string>();
+for (const match of explorerSource.matchAll(/\[\s*["'][^"']+["']\s*,\s*["'](\/[^"']*)["']\s*\]/g)) {
+  explorerRoutes.add(normalizeRoute(match[1]));
+}
+
 const files = await walk(ROOT);
 const violations: string[] = [];
 const dispatched = new Map<string, string[]>();
 const listened = new Map<string, string[]>();
+
+for (const route of knownRoutes) {
+  if (route.includes("$")) continue;
+  if (!explorerRoutes.has(route)) {
+    violations.push(`registered static route '${route}' is not exposed in the global page explorer.`);
+  }
+}
 
 for (const file of files) {
   const source = await readFile(file, "utf8");
@@ -96,7 +110,7 @@ for (const [event, origins] of dispatched) {
 }
 
 console.log(
-  `Navigation audit: ${files.length} source files, ${knownRoutes.size} registered routes, ${dispatched.size} dispatched page events.`,
+  `Navigation audit: ${files.length} source files, ${knownRoutes.size} registered routes, ${explorerRoutes.size} globally exposed routes, ${dispatched.size} dispatched page events.`,
 );
 if (violations.length) {
   console.error(`Navigation audit failed with ${violations.length} issue(s):`);
