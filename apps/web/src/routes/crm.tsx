@@ -5,10 +5,11 @@ import { RelationshipCrmPage } from "@/modules/commercial/crm/relationship-crm-p
 export const Route = createFileRoute("/crm")({
   head: () => ({
     meta: [
-      { title: "CRM — Contatos e Leads | Sistema Central Lander Solutions" },
+      { title: "CRM — Contatos/Clientes e Leads | Sistema Central Lander Solutions" },
       {
         name: "description",
-        content: "CRM centralizado com contatos de todos os relacionamentos e controle de leads.",
+        content:
+          "CRM centralizado com contatos, clientes e controle completo do funil de leads da Lander Solutions.",
       },
     ],
   }),
