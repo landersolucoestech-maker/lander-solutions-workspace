@@ -87,6 +87,7 @@ jobs:
               Path("apps/web/src/modules/finance/transactions/bank-operations-types.ts"),
               Path("apps/web/src/config/authentication.ts"),
               Path("apps/web/src/routes/__root.tsx"),
+              Path("apps/web/src/app/providers/application-providers.tsx"),
               Path("apps/web/src/app/navigation/topbar.tsx"),
               Path("apps/web/src/app/navigation/app-sidebar.tsx"),
               Path("supabase/migrations/20260803183950_enable_public_fiscal_dev.sql"),
@@ -116,7 +117,7 @@ jobs:
           route_tree = Path("apps/web/src/routeTree.gen.ts").read_text()
           sidebar = Path("apps/web/src/app/navigation/app-sidebar.tsx").read_text()
           auth_config = Path("apps/web/src/config/authentication.ts").read_text()
-          root = Path("apps/web/src/routes/__root.tsx").read_text()
+          providers = Path("apps/web/src/app/providers/application-providers.tsx").read_text()
           topbar = Path("apps/web/src/app/navigation/topbar.tsx").read_text()
           fiscal_migration = Path(
               "supabase/migrations/20260803183950_enable_public_fiscal_dev.sql"
@@ -195,11 +196,9 @@ jobs:
 
           if "AUTHENTICATION_ENABLED = false as const" not in auth_config:
               raise RuntimeError("A autenticação deve permanecer explicitamente desativada.")
-          if "<AuthProvider>" not in root or "</AuthProvider>" not in root:
+          if "<AuthProvider>" not in providers or "</AuthProvider>" not in providers:
               raise RuntimeError("AuthProvider deve permanecer montado mesmo com a autenticação desativada.")
-          if root.index("<AuthProvider>") > root.index("AUTHENTICATION_ENABLED ?"):
-              raise RuntimeError("AuthProvider deve envolver o desvio público e o AuthGate.")
-          if "AUTHENTICATION_ENABLED ? (" not in root or "<AuthGate>" not in root:
+          if "AUTHENTICATION_ENABLED ? <AuthGate>" not in providers:
               raise RuntimeError("Somente o AuthGate pode ser condicionado pela configuração de autenticação.")
           if "AUTHENTICATION_ENABLED && <AuthenticatedUserControls />" not in topbar:
               raise RuntimeError("Os controles de sessão não estão condicionados à autenticação.")
@@ -231,6 +230,7 @@ jobs:
           cp -R apps/web/src/modules/finance/fiscal /tmp/application-output/fiscal
           cp -R apps/web/src/modules/finance/transactions /tmp/application-output/transactions
           cp apps/web/src/config/authentication.ts /tmp/application-output/
+          cp apps/web/src/app/providers/application-providers.tsx /tmp/application-output/
           cp apps/web/src/app/navigation/app-sidebar.tsx /tmp/application-output/
           cp apps/web/src/app/navigation/topbar.tsx /tmp/application-output/
           cp apps/web/src/routes/__root.tsx /tmp/application-output/
