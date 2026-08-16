@@ -36,6 +36,9 @@ jobs:
       - name: Install dependencies
         run: bun install --frozen-lockfile
 
+      - name: Format generated frontend preview
+        run: bunx prettier@3.9.6 --write apps/web/src/app/preview/frontend-preview-page.tsx apps/web/src/app/shell/application-shell.tsx
+
       - name: Lint frontend
         run: bun run lint
 
