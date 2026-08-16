@@ -63,9 +63,10 @@ const actionMarkers = [
   "onMouseDown=",
   "onKeyDown=",
   "asChild",
+  "{...props}",
   'type="submit"',
   "type={'submit'}",
-  "type=\"reset\"",
+  'type="reset"',
   "type={'reset'}",
 ];
 const wrapperMarkers = [
@@ -90,7 +91,9 @@ for (const file of files) {
     const start = match.index ?? 0;
     const tag = readOpeningTag(source, start);
     if (!tag) {
-      candidates.push(`${relative(".", file)}:${source.slice(0, start).split("\n").length}: malformed button opening tag`);
+      candidates.push(
+        `${relative(".", file)}:${source.slice(0, start).split("\n").length}: malformed button opening tag`,
+      );
       continue;
     }
 
@@ -120,6 +123,8 @@ if (candidates.length === 0) {
   process.exit(0);
 }
 
-console.error(`Interactive action audit failed: ${candidates.length} potentially inert control(s) require review.`);
+console.error(
+  `Interactive action audit failed: ${candidates.length} potentially inert control(s) require review.`,
+);
 for (const candidate of candidates) console.error(`- ${candidate}`);
 process.exit(1);
