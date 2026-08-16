@@ -3,8 +3,6 @@ import {
   BarChart3,
   Building2,
   CalendarDays,
-  ChevronDown,
-  ChevronRight,
   CircleDollarSign,
   ContactRound,
   FileSignature,
@@ -23,7 +21,6 @@ import {
   UsersRound,
   WalletCards,
 } from "lucide-react";
-import { useState } from "react";
 import {
   Sidebar,
   SidebarContent,
@@ -40,20 +37,20 @@ import {
 const coreItems = [
   { title: "Dashboard", url: "/", icon: LayoutDashboard, exact: true },
   { title: "Agenda", url: "/agenda", icon: CalendarDays },
-];
-const businessGroups = [
+] as const;
+
+const groups = [
   {
-    key: "empresa",
     title: "Empresa",
     icon: Building2,
     items: [
       { title: "Cadastros da Empresa", url: "/estrutura-organizacional", icon: Building2 },
+      { title: "Estrutura Corporativa", url: "/estrutura", icon: Building2 },
       { title: "Estrutura Societária", url: "/estrutura-societaria", icon: Landmark },
       { title: "Acessos e Permissões", url: "/acessos", icon: KeyRound },
     ],
   },
   {
-    key: "comercial",
     title: "Comercial",
     icon: ContactRound,
     items: [
@@ -63,7 +60,6 @@ const businessGroups = [
     ],
   },
   {
-    key: "operacoes",
     title: "Operações",
     icon: Settings,
     items: [
@@ -73,34 +69,30 @@ const businessGroups = [
     ],
   },
   {
-    key: "contratos",
     title: "Contratos",
     icon: FileSignature,
     items: [{ title: "Gestão de Contratos", url: "/contratos", icon: FileSignature }],
   },
   {
-    key: "financeiro",
     title: "Financeiro",
     icon: CircleDollarSign,
     items: [
       { title: "Transações", url: "/transacoes", icon: WalletCards },
       { title: "Contabilidade", url: "/contabilidade", icon: BarChart3 },
+      { title: "Relatórios", url: "/relatorios", icon: BarChart3 },
     ],
   },
   {
-    key: "fiscal",
     title: "Fiscal",
     icon: ReceiptText,
     items: [{ title: "Notas Fiscais", url: "/nota-fiscal", icon: ReceiptText }],
   },
   {
-    key: "custos",
     title: "Custos & Rateios",
     icon: Scale,
     items: [{ title: "Rateio de Custos", url: "/rateio", icon: Scale }],
   },
   {
-    key: "participacoes",
     title: "Participações & Repasses",
     icon: Percent,
     items: [
@@ -109,15 +101,11 @@ const businessGroups = [
     ],
   },
   {
-    key: "atendimento",
     title: "Atendimento",
     icon: Headphones,
     items: [{ title: "Atendimento e Suporte", url: "/atendimento", icon: Headphones }],
   },
-] as const;
-const supportGroups = [
   {
-    key: "governanca",
     title: "Governança",
     icon: ShieldCheck,
     items: [
@@ -128,17 +116,18 @@ const supportGroups = [
     ],
   },
   {
-    key: "gestao",
     title: "Gestão e Configurações",
     icon: Settings,
     items: [
-      { title: "Relatórios", url: "/relatorios", icon: BarChart3 },
       { title: "Recursos Humanos", url: "/rh", icon: UsersRound },
-      { title: "Integrações", url: "/configuracoes/integracoes", icon: Network },
+      { title: "Integrações", url: "/integracoes", icon: Network },
+      { title: "Configurações de Integrações", url: "/configuracoes/integracoes", icon: Settings },
+      { title: "Serviços de Leads", url: "/configuracoes-servicos-leads", icon: Settings },
+      { title: "Templates de Contratos", url: "/configuracoes-templates-contratos", icon: FileSignature },
+      { title: "Variáveis de Contratos", url: "/configuracoes-variaveis-contratos", icon: FileSignature },
     ],
   },
 ] as const;
-type GroupKey = (typeof businessGroups)[number]["key"] | (typeof supportGroups)[number]["key"];
 
 function LanderMark() {
   return (
@@ -150,33 +139,27 @@ function LanderMark() {
     </div>
   );
 }
+
 export function AppSidebar() {
   const { state } = useSidebar();
   const collapsed = state === "collapsed";
   const pathname = useRouterState({ select: (s) => s.location.pathname });
-  const [openGroups, setOpenGroups] = useState<Record<GroupKey, boolean>>({
-    empresa: false,
-    comercial: false,
-    operacoes: false,
-    contratos: false,
-    financeiro: true,
-    fiscal: false,
-    custos: false,
-    participacoes: false,
-    atendimento: false,
-    governanca: false,
-    gestao: false,
-  });
   const isActive = (url: string, exact?: boolean) =>
     exact ? pathname === url : pathname === url || pathname.startsWith(`${url}/`);
+
   const renderItem = (item: {
     title: string;
     url: string;
     icon: typeof LayoutDashboard;
     exact?: boolean;
-  }) => (
+  }, nested = false) => (
     <SidebarMenuItem key={item.url}>
-      <SidebarMenuButton asChild isActive={isActive(item.url, item.exact)} tooltip={item.title}>
+      <SidebarMenuButton
+        asChild
+        isActive={isActive(item.url, item.exact)}
+        tooltip={item.title}
+        className={nested && !collapsed ? "pl-7" : undefined}
+      >
         <Link to={item.url} className="flex items-center gap-2">
           <item.icon className="h-4 w-4 shrink-0" />
           {!collapsed && <span className="truncate text-[13px]">{item.title}</span>}
@@ -184,55 +167,11 @@ export function AppSidebar() {
       </SidebarMenuButton>
     </SidebarMenuItem>
   );
-  const renderGroup = (group: (typeof businessGroups)[number] | (typeof supportGroups)[number]) => {
-    const active = group.items.some((i) => isActive(i.url));
-    const expanded = openGroups[group.key] || active;
-    return (
-      <div key={group.key}>
-        <SidebarMenuItem>
-          <SidebarMenuButton
-            type="button"
-            isActive={active}
-            tooltip={group.title}
-            aria-expanded={expanded}
-            onClick={() => setOpenGroups((c) => ({ ...c, [group.key]: !c[group.key] }))}
-          >
-            <group.icon className="h-4 w-4 shrink-0" />
-            {!collapsed && (
-              <>
-                <span className="truncate text-[13px] font-medium">{group.title}</span>
-                {expanded ? (
-                  <ChevronDown className="ml-auto h-4 w-4" />
-                ) : (
-                  <ChevronRight className="ml-auto h-4 w-4" />
-                )}
-              </>
-            )}
-          </SidebarMenuButton>
-        </SidebarMenuItem>
-        {(collapsed || expanded) &&
-          group.items.map((item) => (
-            <SidebarMenuItem key={item.url}>
-              <SidebarMenuButton
-                asChild
-                isActive={isActive(item.url)}
-                tooltip={item.title}
-                className={!collapsed ? "pl-7" : undefined}
-              >
-                <Link to={item.url} className="flex items-center gap-2">
-                  <item.icon className="h-4 w-4 shrink-0" />
-                  {!collapsed && <span className="truncate text-[13px]">{item.title}</span>}
-                </Link>
-              </SidebarMenuButton>
-            </SidebarMenuItem>
-          ))}
-      </div>
-    );
-  };
+
   return (
     <Sidebar collapsible="icon">
       <SidebarHeader className="border-b border-sidebar-border">
-        <div className="flex items-center gap-3 px-1.5 py-2.5">
+        <Link to="/" className="flex items-center gap-3 px-1.5 py-2.5" aria-label="Ir para o Dashboard">
           <LanderMark />
           {!collapsed && (
             <div className="min-w-0">
@@ -244,35 +183,50 @@ export function AppSidebar() {
               </p>
             </div>
           )}
-        </div>
+        </Link>
       </SidebarHeader>
+
       <SidebarContent>
         <SidebarGroup>
           <SidebarGroupContent>
             <SidebarMenu>
-              {coreItems.map(renderItem)}
+              {coreItems.map((item) => renderItem(item))}
               {!collapsed && (
                 <li className="px-2 pb-1 pt-3 text-[10px] font-semibold uppercase tracking-[.16em] text-sidebar-foreground/45">
-                  Pilares do negócio
+                  Sistema completo
                 </li>
               )}
-              {businessGroups.map(renderGroup)}
-              {!collapsed && (
-                <li className="px-2 pb-1 pt-3 text-[10px] font-semibold uppercase tracking-[.16em] text-sidebar-foreground/45">
-                  Gestão corporativa
-                </li>
-              )}
-              {supportGroups.map(renderGroup)}
+              {groups.map((group) => {
+                const groupTarget = group.items[0];
+                return (
+                  <div key={group.title}>
+                    <SidebarMenuItem>
+                      <SidebarMenuButton
+                        asChild
+                        isActive={group.items.some((item) => isActive(item.url))}
+                        tooltip={group.title}
+                      >
+                        <Link to={groupTarget.url} className="flex items-center gap-2">
+                          <group.icon className="h-4 w-4 shrink-0" />
+                          {!collapsed && (
+                            <span className="truncate text-[13px] font-semibold">{group.title}</span>
+                          )}
+                        </Link>
+                      </SidebarMenuButton>
+                    </SidebarMenuItem>
+                    {group.items.map((item) => renderItem(item, true))}
+                  </div>
+                );
+              })}
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
       </SidebarContent>
+
       {!collapsed && (
         <SidebarFooter className="border-t border-sidebar-border">
           <div className="px-2 py-2">
-            <p className="text-[11px] font-medium text-sidebar-foreground/75">
-              Lander Solutions Ltda.
-            </p>
+            <p className="text-[11px] font-medium text-sidebar-foreground/75">Lander Solutions Ltda.</p>
             <p className="mt-0.5 text-[10px] leading-relaxed text-sidebar-foreground/50">
               Tecnologia para empresas crescerem.
             </p>
