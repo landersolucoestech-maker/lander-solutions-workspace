@@ -14,7 +14,6 @@ concurrency:
 
 jobs:
   patch:
-    if: ${{ !startsWith(github.event.head_commit.message, 'fix(frontend): apply navigation autofix') }}
     runs-on: ubuntu-latest
     steps:
       - name: Checkout dev
