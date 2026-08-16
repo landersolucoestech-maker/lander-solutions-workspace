@@ -13,8 +13,12 @@ export const getRouter = () => {
     throwOnError: true,
   });
 
+  const basepath =
+    import.meta.env.BASE_URL === "/" ? "/" : import.meta.env.BASE_URL.replace(/\/$/, "");
+
   const router = createRouter({
     routeTree,
+    basepath,
     context: { queryClient },
     scrollRestoration: true,
     defaultPreloadStaleTime: 0,
