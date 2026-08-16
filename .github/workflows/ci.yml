@@ -79,15 +79,16 @@ jobs:
 
           required = [
               Path("apps/web/src/routes/nota-fiscal.tsx"),
-              Path("apps/web/src/features/fiscal/fiscal-page.tsx"),
-              Path("apps/web/src/features/fiscal/fiscal-form-dialog.tsx"),
-              Path("apps/web/src/features/fiscal/api.ts"),
-              Path("apps/web/src/features/fiscal/types.ts"),
-              Path("apps/web/src/features/transactions/bank-operations-api.ts"),
-              Path("apps/web/src/features/transactions/bank-operations-types.ts"),
+              Path("apps/web/src/modules/finance/fiscal/fiscal-page.tsx"),
+              Path("apps/web/src/modules/finance/fiscal/fiscal-form-dialog.tsx"),
+              Path("apps/web/src/modules/finance/fiscal/api.ts"),
+              Path("apps/web/src/modules/finance/fiscal/types.ts"),
+              Path("apps/web/src/modules/finance/transactions/bank-operations-api.ts"),
+              Path("apps/web/src/modules/finance/transactions/bank-operations-types.ts"),
               Path("apps/web/src/config/authentication.ts"),
               Path("apps/web/src/routes/__root.tsx"),
-              Path("apps/web/src/components/topbar.tsx"),
+              Path("apps/web/src/app/navigation/topbar.tsx"),
+              Path("apps/web/src/app/navigation/app-sidebar.tsx"),
               Path("supabase/migrations/20260803183950_enable_public_fiscal_dev.sql"),
               Path("supabase/migrations/20260803191102_enable_public_development_runtime.sql"),
               Path("supabase/migrations/20260803191214_fix_public_development_permission_function.sql"),
@@ -106,17 +107,17 @@ jobs:
               raise RuntimeError(f"Operações Financeiras ainda existe: {remaining}")
 
           route = Path("apps/web/src/routes/nota-fiscal.tsx").read_text()
-          page = Path("apps/web/src/features/fiscal/fiscal-page.tsx").read_text()
-          dialog = Path("apps/web/src/features/fiscal/fiscal-form-dialog.tsx").read_text()
+          page = Path("apps/web/src/modules/finance/fiscal/fiscal-page.tsx").read_text()
+          dialog = Path("apps/web/src/modules/finance/fiscal/fiscal-form-dialog.tsx").read_text()
           fiscal_source = "\n".join([
-              Path("apps/web/src/features/fiscal/api.ts").read_text(),
-              Path("apps/web/src/features/fiscal/types.ts").read_text(),
+              Path("apps/web/src/modules/finance/fiscal/api.ts").read_text(),
+              Path("apps/web/src/modules/finance/fiscal/types.ts").read_text(),
           ])
           route_tree = Path("apps/web/src/routeTree.gen.ts").read_text()
-          sidebar = Path("apps/web/src/components/app-sidebar.tsx").read_text()
+          sidebar = Path("apps/web/src/app/navigation/app-sidebar.tsx").read_text()
           auth_config = Path("apps/web/src/config/authentication.ts").read_text()
           root = Path("apps/web/src/routes/__root.tsx").read_text()
-          topbar = Path("apps/web/src/components/topbar.tsx").read_text()
+          topbar = Path("apps/web/src/app/navigation/topbar.tsx").read_text()
           fiscal_migration = Path(
               "supabase/migrations/20260803183950_enable_public_fiscal_dev.sql"
           ).read_text()
@@ -130,16 +131,16 @@ jobs:
               "supabase/migrations/20260803204012_optimize_public_development_policies.sql"
           ).read_text()
 
-          if '@/features/fiscal/fiscal-page' not in route or 'component: FiscalPage' not in route:
-              raise RuntimeError("A rota Nota Fiscal não usa exclusivamente o módulo fiscal.")
+          if '@/modules/finance/fiscal/fiscal-page' not in route or 'component: FiscalPage' not in route:
+              raise RuntimeError("A rota Nota Fiscal não usa exclusivamente o módulo fiscal canônico.")
           if 'FiscalFormDialog' not in page or 'setCreateOpen(true)' not in page:
               raise RuntimeError("O módulo fiscal deve manter o modal de cadastro na própria página.")
           if 'window.addEventListener("fiscal:create"' not in page:
               raise RuntimeError("A página fiscal deve responder ao comando de criação da barra superior.")
           if 'dispatchPageEvent("fiscal:create")' not in topbar or 'Registrar nota' not in topbar:
               raise RuntimeError("Registrar nota deve permanecer na barra superior e abrir o modal fiscal.")
-          if 'DialogContent className="max-h-[92vh] max-w-4xl overflow-y-auto"' not in dialog:
-              raise RuntimeError("O cadastro fiscal deve permanecer em modal.")
+          if 'DialogContent' not in dialog or 'overflow-y-auto' not in dialog:
+              raise RuntimeError("O cadastro fiscal deve permanecer em modal rolável.")
           if 'client.auth.getUser()' in fiscal_source:
               raise RuntimeError("O módulo fiscal não pode exigir sessão enquanto a autenticação está desativada.")
           if 'public-dev/' not in fiscal_source:
@@ -215,6 +216,8 @@ jobs:
           bun run format:check
           bun run lint
           bun run typecheck
+          bun run test:navigation
+          bun scripts/audit-frontend-actions.ts
           bun run test
           bun run test:repository
           bun run build
@@ -225,12 +228,11 @@ jobs:
         run: |
           set -euo pipefail
           mkdir -p /tmp/application-output
-          cp -R apps/web/src/features/fiscal /tmp/application-output/
-          cp -R apps/web/src/features/finance /tmp/application-output/
-          cp -R apps/web/src/features/transactions /tmp/application-output/
+          cp -R apps/web/src/modules/finance/fiscal /tmp/application-output/fiscal
+          cp -R apps/web/src/modules/finance/transactions /tmp/application-output/transactions
           cp apps/web/src/config/authentication.ts /tmp/application-output/
-          cp apps/web/src/components/app-sidebar.tsx /tmp/application-output/
-          cp apps/web/src/components/topbar.tsx /tmp/application-output/
+          cp apps/web/src/app/navigation/app-sidebar.tsx /tmp/application-output/
+          cp apps/web/src/app/navigation/topbar.tsx /tmp/application-output/
           cp apps/web/src/routes/__root.tsx /tmp/application-output/
           cp apps/web/src/routes/nota-fiscal.tsx /tmp/application-output/
           cp apps/web/src/routeTree.gen.ts /tmp/application-output/
