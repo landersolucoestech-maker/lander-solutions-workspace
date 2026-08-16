@@ -1,0 +1,181 @@
+@import "tailwindcss" source(none);
+@source "../src";
+@import "tw-animate-css";
+
+@custom-variant dark (&:is(.dark *));
+
+/*
+ * LANDER SOLUTIONS — Sistema Central
+ * Painel corporativo denso e sóbrio: tinta grafite, papel quente,
+ * acento verde-petróleo e tipografia IBM Plex (texto) + JetBrains Mono (números).
+ */
+
+@theme inline {
+  --radius-sm: calc(var(--radius) - 2px);
+  --radius-md: var(--radius);
+  --radius-lg: calc(var(--radius) + 2px);
+  --radius-xl: calc(var(--radius) + 4px);
+  --radius-2xl: calc(var(--radius) + 8px);
+  --radius-3xl: calc(var(--radius) + 12px);
+  --radius-4xl: calc(var(--radius) + 16px);
+  --font-sans: "IBM Plex Sans", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-positive: var(--positive);
+  --color-positive-foreground: var(--positive-foreground);
+  --color-warning: var(--warning);
+  --color-warning-foreground: var(--warning-foreground);
+  --color-info: var(--info);
+  --color-info-foreground: var(--info-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-ring-offset-background: var(--background);
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+  --color-chart-6: var(--chart-6);
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+}
+
+:root {
+  --radius: 0.25rem;
+  --background: oklch(0.977 0.004 95);
+  --foreground: oklch(0.235 0.012 250);
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.235 0.012 250);
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.235 0.012 250);
+  --primary: oklch(0.415 0.062 196);
+  --primary-foreground: oklch(0.985 0.005 190);
+  --secondary: oklch(0.945 0.006 95);
+  --secondary-foreground: oklch(0.31 0.014 250);
+  --muted: oklch(0.951 0.005 95);
+  --muted-foreground: oklch(0.505 0.014 250);
+  --accent: oklch(0.932 0.024 190);
+  --accent-foreground: oklch(0.32 0.05 196);
+  --destructive: oklch(0.512 0.176 26);
+  --destructive-foreground: oklch(0.985 0.005 95);
+  --positive: oklch(0.503 0.108 152);
+  --positive-foreground: oklch(0.985 0.005 95);
+  --warning: oklch(0.63 0.128 68);
+  --warning-foreground: oklch(0.21 0.03 68);
+  --info: oklch(0.49 0.086 240);
+  --info-foreground: oklch(0.985 0.005 95);
+  --border: oklch(0.897 0.007 95);
+  --input: oklch(0.897 0.007 95);
+  --ring: oklch(0.415 0.062 196);
+  --chart-1: oklch(0.415 0.062 196);
+  --chart-2: oklch(0.63 0.128 68);
+  --chart-3: oklch(0.503 0.108 152);
+  --chart-4: oklch(0.49 0.086 240);
+  --chart-5: oklch(0.58 0.11 330);
+  --chart-6: oklch(0.55 0.02 250);
+  --sidebar: oklch(0.263 0.017 249);
+  --sidebar-foreground: oklch(0.87 0.01 240);
+  --sidebar-primary: oklch(0.68 0.09 190);
+  --sidebar-primary-foreground: oklch(0.19 0.015 249);
+  --sidebar-accent: oklch(0.325 0.019 249);
+  --sidebar-accent-foreground: oklch(0.97 0.005 190);
+  --sidebar-border: oklch(0.34 0.017 249);
+  --sidebar-ring: oklch(0.68 0.09 190);
+}
+
+.dark {
+  --background: oklch(0.185 0.012 250);
+  --foreground: oklch(0.93 0.006 95);
+  --card: oklch(0.228 0.014 250);
+  --card-foreground: oklch(0.93 0.006 95);
+  --popover: oklch(0.228 0.014 250);
+  --popover-foreground: oklch(0.93 0.006 95);
+  --primary: oklch(0.68 0.09 190);
+  --primary-foreground: oklch(0.19 0.015 249);
+  --secondary: oklch(0.28 0.014 250);
+  --secondary-foreground: oklch(0.93 0.006 95);
+  --muted: oklch(0.28 0.014 250);
+  --muted-foreground: oklch(0.68 0.012 250);
+  --accent: oklch(0.32 0.03 196);
+  --accent-foreground: oklch(0.9 0.03 190);
+  --destructive: oklch(0.62 0.17 26);
+  --destructive-foreground: oklch(0.98 0.005 95);
+  --positive: oklch(0.63 0.11 152);
+  --positive-foreground: oklch(0.16 0.02 152);
+  --warning: oklch(0.72 0.12 68);
+  --warning-foreground: oklch(0.2 0.03 68);
+  --info: oklch(0.63 0.09 240);
+  --info-foreground: oklch(0.16 0.02 240);
+  --border: oklch(1 0 0 / 12%);
+  --input: oklch(1 0 0 / 16%);
+  --ring: oklch(0.68 0.09 190);
+  --chart-1: oklch(0.68 0.09 190);
+  --chart-2: oklch(0.72 0.12 68);
+  --chart-3: oklch(0.63 0.11 152);
+  --chart-4: oklch(0.63 0.09 240);
+  --chart-5: oklch(0.66 0.11 330);
+  --chart-6: oklch(0.62 0.02 250);
+  --sidebar: oklch(0.21 0.014 249);
+  --sidebar-foreground: oklch(0.87 0.01 240);
+  --sidebar-primary: oklch(0.68 0.09 190);
+  --sidebar-primary-foreground: oklch(0.19 0.015 249);
+  --sidebar-accent: oklch(0.28 0.016 249);
+  --sidebar-accent-foreground: oklch(0.97 0.005 190);
+  --sidebar-border: oklch(0.3 0.015 249);
+  --sidebar-ring: oklch(0.68 0.09 190);
+}
+
+@layer base {
+  * {
+    border-color: var(--color-border);
+  }
+
+  body {
+    background-color: var(--color-background);
+    color: var(--color-foreground);
+    font-family: var(--font-sans);
+    font-feature-settings: "cv05", "ss01";
+  }
+
+  h1,
+  h2,
+  h3 {
+    letter-spacing: -0.015em;
+  }
+}
+
+@utility num {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.02em;
+}
+
+@utility label-caps {
+  font-size: 0.6875rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  font-weight: 600;
+  color: var(--color-muted-foreground);
+}

@@ -1,0 +1,285 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - dev
+  pull_request:
+    branches:
+      - main
+
+permissions:
+  contents: read
+
+concurrency:
+  group: application-validation-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  validate_application:
+    name: Validate canonical application
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      VITE_APP_ENV: development
+      VITE_SUPABASE_URL: https://jodzhcktrlwinywqgbab.supabase.co
+      VITE_EXPECTED_SUPABASE_REF: jodzhcktrlwinywqgbab
+      VITE_SUPABASE_PUBLISHABLE_KEY: sb_publishable_ci_validation_only_not_a_real_key
+      SUPABASE_TELEMETRY_DISABLED: "1"
+
+    steps:
+      - name: Checkout dev
+        uses: actions/checkout@v6
+        with:
+          ref: dev
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: 1.3.14
+
+      - name: Install dependencies
+        run: bun install --frozen-lockfile
+
+      - name: Validate shell scripts
+        run: bash -n scripts/*.sh
+
+      - name: Block unsafe production promotion
+        if: github.event_name == 'pull_request' && github.event.pull_request.draft == false
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          from pathlib import Path
+
+          auth = Path("apps/web/src/config/authentication.ts").read_text()
+          migrations = "\n".join(
+              path.read_text()
+              for path in sorted(Path("supabase/migrations").glob("*.sql"))
+          )
+
+          failures = []
+          if "AUTHENTICATION_ENABLED = true as const" not in auth:
+              failures.append("a autenticação ainda está desativada")
+          if "PRODUCTION_AUTH_RESTORED" not in migrations:
+              failures.append("não existe migration posterior revogando o acesso público temporário")
+
+          if failures:
+              raise RuntimeError(
+                  "Promoção para produção bloqueada: " + "; ".join(failures) + "."
+              )
+          PY
+
+      - name: Verify standalone fiscal architecture and public access
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          from pathlib import Path
+
+          required = [
+              Path("apps/web/src/routes/nota-fiscal.tsx"),
+              Path("apps/web/src/features/fiscal/fiscal-page.tsx"),
+              Path("apps/web/src/features/fiscal/fiscal-form-dialog.tsx"),
+              Path("apps/web/src/features/fiscal/api.ts"),
+              Path("apps/web/src/features/fiscal/types.ts"),
+              Path("apps/web/src/features/transactions/bank-operations-api.ts"),
+              Path("apps/web/src/features/transactions/bank-operations-types.ts"),
+              Path("apps/web/src/config/authentication.ts"),
+              Path("apps/web/src/routes/__root.tsx"),
+              Path("apps/web/src/components/topbar.tsx"),
+              Path("supabase/migrations/20260803183950_enable_public_fiscal_dev.sql"),
+              Path("supabase/migrations/20260803191102_enable_public_development_runtime.sql"),
+              Path("supabase/migrations/20260803191214_fix_public_development_permission_function.sql"),
+              Path("supabase/migrations/20260803204012_optimize_public_development_policies.sql"),
+          ]
+          missing = [str(path) for path in required if not path.exists()]
+          if missing:
+              raise RuntimeError(f"Arquitetura obrigatória incompleta: {missing}")
+
+          forbidden = [
+              Path("apps/web/src/routes/operacoes-financeiras.tsx"),
+              Path("apps/web/src/features/financial-operations/financial-operations-page.tsx"),
+          ]
+          remaining = [str(path) for path in forbidden if path.exists()]
+          if remaining:
+              raise RuntimeError(f"Operações Financeiras ainda existe: {remaining}")
+
+          route = Path("apps/web/src/routes/nota-fiscal.tsx").read_text()
+          page = Path("apps/web/src/features/fiscal/fiscal-page.tsx").read_text()
+          dialog = Path("apps/web/src/features/fiscal/fiscal-form-dialog.tsx").read_text()
+          fiscal_source = "\n".join([
+              Path("apps/web/src/features/fiscal/api.ts").read_text(),
+              Path("apps/web/src/features/fiscal/types.ts").read_text(),
+          ])
+          route_tree = Path("apps/web/src/routeTree.gen.ts").read_text()
+          sidebar = Path("apps/web/src/components/app-sidebar.tsx").read_text()
+          auth_config = Path("apps/web/src/config/authentication.ts").read_text()
+          root = Path("apps/web/src/routes/__root.tsx").read_text()
+          topbar = Path("apps/web/src/components/topbar.tsx").read_text()
+          fiscal_migration = Path(
+              "supabase/migrations/20260803183950_enable_public_fiscal_dev.sql"
+          ).read_text()
+          runtime_migration = Path(
+              "supabase/migrations/20260803191102_enable_public_development_runtime.sql"
+          ).read_text()
+          permission_migration = Path(
+              "supabase/migrations/20260803191214_fix_public_development_permission_function.sql"
+          ).read_text()
+          optimization_migration = Path(
+              "supabase/migrations/20260803204012_optimize_public_development_policies.sql"
+          ).read_text()
+
+          if '@/features/fiscal/fiscal-page' not in route or 'component: FiscalPage' not in route:
+              raise RuntimeError("A rota Nota Fiscal não usa exclusivamente o módulo fiscal.")
+          if 'FiscalFormDialog' not in page or 'setCreateOpen(true)' not in page:
+              raise RuntimeError("O módulo fiscal deve manter o modal de cadastro na própria página.")
+          if 'window.addEventListener("fiscal:create"' not in page:
+              raise RuntimeError("A página fiscal deve responder ao comando de criação da barra superior.")
+          if 'dispatchPageEvent("fiscal:create")' not in topbar or 'Registrar nota' not in topbar:
+              raise RuntimeError("Registrar nota deve permanecer na barra superior e abrir o modal fiscal.")
+          if 'DialogContent className="max-h-[92vh] max-w-4xl overflow-y-auto"' not in dialog:
+              raise RuntimeError("O cadastro fiscal deve permanecer em modal.")
+          if 'client.auth.getUser()' in fiscal_source:
+              raise RuntimeError("O módulo fiscal não pode exigir sessão enquanto a autenticação está desativada.")
+          if 'public-dev/' not in fiscal_source:
+              raise RuntimeError("O upload fiscal público de desenvolvimento não está isolado.")
+
+          if "create_fiscal_document_bundle" not in fiscal_migration:
+              raise RuntimeError("A migration fiscal pública não contém a RPC de cadastro.")
+          if "create policy dev_public_read" not in runtime_migration:
+              raise RuntimeError("A migration pública geral não contém a política de leitura da dev.")
+          if "security definer" not in permission_migration.lower():
+              raise RuntimeError("A correção de has_permission não preserva o modo público da dev.")
+          required_optimization_fragments = [
+              "contract_templates_created_by_idx",
+              "contract_templates_updated_by_idx",
+              "financial_fiscal_documents_party_idx",
+              "drop policy if exists dev_public_fiscal_documents_select",
+          ]
+          missing_optimization = [
+              item for item in required_optimization_fragments
+              if item not in optimization_migration
+          ]
+          if missing_optimization:
+              raise RuntimeError(
+                  f"Otimização de políticas incompleta: {missing_optimization}"
+              )
+
+          forbidden_route_fragments = [
+              "operacoes-financeiras",
+              "OperacoesFinanceirasRoute",
+              "FinancialOperationsPage",
+          ]
+          route_leaks = [item for item in forbidden_route_fragments if item in route_tree]
+          if route_leaks:
+              raise RuntimeError(f"A árvore ainda contém Operações Financeiras: {route_leaks}")
+          if 'Operações Financeiras' in sidebar or '/operacoes-financeiras' in sidebar:
+              raise RuntimeError("Operações Financeiras não pode aparecer no menu.")
+
+          forbidden_fiscal_fragments = [
+              "financial_adjustments",
+              "bank_statement_imports",
+              "bank_statement_lines",
+              "bank_reconciliations",
+              "financial_period_close",
+              "createAdjustment",
+              "updateCloseItem",
+              "prepareClose",
+              "closePeriod",
+          ]
+          fiscal_leaks = [item for item in forbidden_fiscal_fragments if item in fiscal_source]
+          if fiscal_leaks:
+              raise RuntimeError(f"Nota Fiscal ainda contém operações financeiras: {fiscal_leaks}")
+
+          if "AUTHENTICATION_ENABLED = false as const" not in auth_config:
+              raise RuntimeError("A autenticação deve permanecer explicitamente desativada.")
+          if "<AuthProvider>" not in root or "</AuthProvider>" not in root:
+              raise RuntimeError("AuthProvider deve permanecer montado mesmo com a autenticação desativada.")
+          if root.index("<AuthProvider>") > root.index("AUTHENTICATION_ENABLED ?"):
+              raise RuntimeError("AuthProvider deve envolver o desvio público e o AuthGate.")
+          if "AUTHENTICATION_ENABLED ? (" not in root or "<AuthGate>" not in root:
+              raise RuntimeError("Somente o AuthGate pode ser condicionado pela configuração de autenticação.")
+          if "AUTHENTICATION_ENABLED && <AuthenticatedUserControls />" not in topbar:
+              raise RuntimeError("Os controles de sessão não estão condicionados à autenticação.")
+          PY
+
+      - name: Generate route tree and build application
+        run: bun run build
+
+      - name: Verify generated route tree is committed
+        run: git diff --exit-code -- apps/web/src/routeTree.gen.ts
+
+      - name: Validate canonical source
+        run: |
+          bun run format:check
+          bun run lint
+          bun run typecheck
+          bun run test
+          bun run test:repository
+          bun run build
+
+      - name: Package validated application files
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/application-output
+          cp -R apps/web/src/features/fiscal /tmp/application-output/
+          cp -R apps/web/src/features/finance /tmp/application-output/
+          cp -R apps/web/src/features/transactions /tmp/application-output/
+          cp apps/web/src/config/authentication.ts /tmp/application-output/
+          cp apps/web/src/components/app-sidebar.tsx /tmp/application-output/
+          cp apps/web/src/components/topbar.tsx /tmp/application-output/
+          cp apps/web/src/routes/__root.tsx /tmp/application-output/
+          cp apps/web/src/routes/nota-fiscal.tsx /tmp/application-output/
+          cp apps/web/src/routeTree.gen.ts /tmp/application-output/
+          cp supabase/migrations/20260803183950_enable_public_fiscal_dev.sql /tmp/application-output/
+          cp supabase/migrations/20260803191102_enable_public_development_runtime.sql /tmp/application-output/
+          cp supabase/migrations/20260803191214_fix_public_development_permission_function.sql /tmp/application-output/
+          cp supabase/migrations/20260803204012_optimize_public_development_policies.sql /tmp/application-output/
+          find /tmp/application-output -type f -print0 | sort -z | xargs -0 sha256sum > /tmp/application-output/SHA256SUMS
+
+      - name: Upload validated application artifact
+        if: always()
+        uses: actions/upload-artifact@v6
+        with:
+          name: validated-application-output
+          path: /tmp/application-output
+          if-no-files-found: error
+          retention-days: 1
+
+  validate_database:
+    name: Rebuild and validate local database
+    needs: validate_application
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    env:
+      SUPABASE_TELEMETRY_DISABLED: "1"
+
+    steps:
+      - name: Checkout dev
+        uses: actions/checkout@v6
+        with:
+          ref: dev
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: 1.3.14
+
+      - name: Install dependencies
+        run: bun install --frozen-lockfile
+
+      - name: Validate shell scripts
+        run: bash -n scripts/*.sh
+
+      - name: Start disposable Supabase
+        run: bunx supabase start
+
+      - name: Validate migrations, pgTAP, backup and restore
+        run: bun run test:database:development
+
+      - name: Stop disposable Supabase
+        if: always()
+        run: bunx supabase stop --no-backup

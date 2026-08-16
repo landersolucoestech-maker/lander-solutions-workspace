@@ -1,0 +1,1 @@
+create index bank_statement_lines_currency_idx on public.bank_statement_lines(currency_code);

@@ -1,0 +1,8 @@
+-- Reserved migration marker.
+-- The connected execution environment rejected the original dynamic SQL block
+-- before PostgreSQL execution. The refactor is applied through static migrations:
+--   20260805040010_organizational_permissions_entities_units.sql
+--   20260805040020_organizational_departments_positions.sql
+--   20260805040030_organizational_products_services_projects.sql
+--   20260805040040_organizational_financial_centers.sql
+--   20260805040050_harden_organizational_anonymous_access.sql

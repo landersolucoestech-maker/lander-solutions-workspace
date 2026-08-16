@@ -1,0 +1,4 @@
+-- Reserved migration marker.
+-- Split into:
+--   20260805040021_organizational_departments.sql
+--   20260805040022_organizational_positions.sql

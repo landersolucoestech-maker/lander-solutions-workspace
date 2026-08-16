@@ -1,0 +1,9 @@
+-- Reserved migration marker.
+-- The original combined migration was split into smaller, independently
+-- auditable migrations because the connected execution environment rejected
+-- the combined payload before PostgreSQL execution.
+--
+-- See:
+--   20260805034510_separate_policy_permissions_and_rls.sql
+--   20260805034520_enforce_policy_version_workflow.sql
+--   20260805034530_create_caller_scoped_policy_workflow.sql

@@ -1,0 +1,6 @@
+{
+  "environment": "development",
+  "release": "ui-layout-fixes-2026-08-03",
+  "sourceCommit": "3b620ef6c256c6dd7d167c44ab925e31e7713e44",
+  "description": "CRM, contratos, recursos humanos, transações, contabilidade, nota fiscal e unidades de negócio"
+}
