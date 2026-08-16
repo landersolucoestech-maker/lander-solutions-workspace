@@ -47,7 +47,7 @@ const PAGE_HEADERS: Record<string, PageHeaderConfig> = {
   },
   "/crm": {
     title: "CRM",
-    subtitle: "Centralize relacionamentos e transforme oportunidades em negócios.",
+    subtitle: "Contatos, clientes e leads em uma única operação comercial.",
   },
   "/agenda": {
     title: "Agenda corporativa",
@@ -359,7 +359,7 @@ export function Topbar() {
             }
           >
             <Plus className="h-4 w-4" />
-            {crmTab === "contacts" ? "Novo Contato" : "Novo Lead"}
+            {crmTab === "contacts" ? "Novo Contato / Cliente" : "Novo Lead"}
           </Button>
         )}
         {isContracts && (
