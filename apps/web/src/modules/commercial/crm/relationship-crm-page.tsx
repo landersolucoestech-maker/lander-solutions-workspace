@@ -31,7 +31,7 @@ type ContactSortKey =
 type LeadSortKey = "lead" | "type" | "contact" | "service" | "source" | "priority" | "status";
 
 const contactHeaders: Array<{ key: ContactSortKey; label: string }> = [
-  { key: "contact", label: "Contato" },
+  { key: "contact", label: "Contato / Cliente" },
   { key: "type", label: "Tipo" },
   { key: "relationship", label: "Relacionamento" },
   { key: "taxId", label: "CPF/CNPJ" },
@@ -257,7 +257,7 @@ export function RelationshipCrmPage() {
     <div className="space-y-6">
       {activeTab === "contacts" ? (
         <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-5">
-          <CountCard label="Todos os contatos" value={scopedContacts.length} />
+          <CountCard label="Contatos / Clientes" value={scopedContacts.length} />
           <CountCard label="Clientes" value={countCategory(scopedContacts, "client")} />
           <CountCard label="Fornecedores" value={countCategory(scopedContacts, "supplier")} />
           <CountCard label="Parceiros" value={countCategory(scopedContacts, "partner")} />
@@ -296,14 +296,14 @@ export function RelationshipCrmPage() {
         className="space-y-5"
       >
         <TabsList className="h-auto w-full justify-start rounded-md border bg-muted/30 p-1 sm:w-auto">
-          <TabsTrigger value="contacts">Contatos</TabsTrigger>
+          <TabsTrigger value="contacts">Contatos / Clientes</TabsTrigger>
           <TabsTrigger value="leads">Leads</TabsTrigger>
         </TabsList>
 
         <TabsContent value="contacts" className="space-y-5">
           <Panel
-            title="Contatos"
-            description="Pessoas físicas e jurídicas que se relacionam com a empresa, independentemente do papel exercido."
+            title="Contatos / Clientes"
+            description="Cadastro central de pessoas físicas e jurídicas, incluindo clientes e demais relacionamentos da Lander Solutions."
           >
             <div className="grid gap-2 border-b px-4 py-3 sm:grid-cols-2 xl:grid-cols-[minmax(280px,1fr)_repeat(3,minmax(150px,auto))]">
               <div className="relative min-w-0">
@@ -311,7 +311,7 @@ export function RelationshipCrmPage() {
                 <Input
                   value={contactSearch}
                   onChange={(event) => setContactSearch(event.target.value)}
-                  placeholder="Buscar contato"
+                  placeholder="Buscar contato ou cliente"
                   className="h-9 w-full rounded-sm pl-9"
                 />
               </div>
@@ -375,7 +375,7 @@ export function RelationshipCrmPage() {
                 </thead>
                 <tbody>
                   {contacts.length === 0 && (
-                    <EmptyRow colSpan={8} label="Nenhum contato encontrado." />
+                    <EmptyRow colSpan={8} label="Nenhum contato ou cliente encontrado." />
                   )}
                   {sortedContacts.map((party) => {
                     const email = primaryContact(parties, party.id, "email");
@@ -648,7 +648,7 @@ function LoadingState() {
 function ErrorState({ error }: { error: unknown }) {
   return (
     <div className="space-y-4 p-4 md:p-6">
-      <PageHeader title="CRM" description="Não foi possível carregar contatos e leads." />
+      <PageHeader title="CRM" description="Não foi possível carregar contatos/clientes e leads." />
       <div className="rounded-sm border border-destructive/40 bg-destructive/5 p-4 text-sm text-destructive">
         {error instanceof Error ? error.message : "Falha ao carregar o CRM."}
       </div>
