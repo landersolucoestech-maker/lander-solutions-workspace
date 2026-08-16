@@ -37,7 +37,7 @@ jobs:
         run: bun install --frozen-lockfile
 
       - name: Format generated frontend preview
-        run: bunx prettier@3.9.6 --write apps/web/src/app/preview/frontend-preview-page.tsx apps/web/src/app/shell/application-shell.tsx
+        run: bunx prettier@3.9.6 --write apps/web/src/app/preview/*.tsx apps/web/src/app/shell/application-shell.tsx
 
       - name: Lint frontend
         run: bun run lint
@@ -92,6 +92,10 @@ jobs:
           fi
           if ! grep -a -q "Faturamento bruto" "$public_dir/index.html"; then
             echo "Dashboard frontend content is missing from prerendered HTML." >&2
+            exit 1
+          fi
+          if ! grep -a -q "Produtos / Unidades" "$public_dir/unidades/index.html"; then
+            echo "Business units frontend content is missing from prerendered HTML." >&2
             exit 1
           fi
           cp "$shell_path" "$public_dir/404.html"
