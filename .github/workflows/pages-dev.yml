@@ -42,7 +42,7 @@ jobs:
           VITE_APP_ENV: development
           VITE_SUPABASE_URL: https://jodzhcktrlwinywqgbab.supabase.co
           VITE_EXPECTED_SUPABASE_REF: jodzhcktrlwinywqgbab
-          VITE_SUPABASE_PUBLISHABLE_KEY: ${{ secrets.VITE_SUPABASE_PUBLISHABLE_KEY }}
+          VITE_SUPABASE_PUBLISHABLE_KEY: sb_publishable_MmZ_-3awL9UXaFWBRAq18g_Phayw5Yj
         run: bun run build:development
 
       - name: Prepare Pages artifact
